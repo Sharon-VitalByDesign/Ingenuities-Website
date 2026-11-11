@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {normalize,imageUrl} from '../public/js/catalog.js';
+const p=JSON.parse(fs.readFileSync(new URL('../public/data/catalog.json',import.meta.url)));
+assert.equal(p.length,59);assert.equal(new Set(p.map(x=>x.id)).size,59);assert.equal(new Set(p.map(x=>x.slug)).size,59);
+assert(p.every(x=>!('Notes' in x)&&!('notes' in x)));assert.equal(p.find(x=>x.id==='ing-009').description,'');assert(!('kosher' in p[0]));assert.equal(normalize(p).length,59);
+assert.equal(imageUrl('javascript:alert(1)'),'');assert.equal(imageUrl('https://evil.com/?x=drive.google.com'),'https://evil.com/?x=drive.google.com');assert.equal(imageUrl('https://drive.google.com/file/d/abc-123/view'),'https://drive.google.com/thumbnail?id=abc-123&sz=w1000');
+assert.equal(normalize([{...p[0],status:'draft'}]).length,0);
+for(const name of ['index','products','product','about','contact'])assert(fs.existsSync(new URL('../public/'+name+'.html',import.meta.url)));
+console.log('59 records, IDs/slugs, privacy, blanks, normalization and pages passed.');
